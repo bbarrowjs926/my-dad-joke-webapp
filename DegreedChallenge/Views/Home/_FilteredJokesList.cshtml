@@ -1,0 +1,43 @@
+﻿@model DegreedChallenge.Models.JokeTermSearchVM
+
+<div style="height: 100%;">
+    @if (Model.JokesFound)
+    {
+        <div class="match-found">
+            @if (Model.ShortJokes.Any())
+            {
+                <div id="shortJokesSection">
+                    <div><label>Short Sized Jokes:</label></div>
+                    @foreach (var joke in Model.ShortJokes)
+                    {
+                        <p>@Html.Raw(joke.Joke)</p>
+                    }
+                </div>
+            }
+            @if (Model.MediumJokes.Any())
+            {
+                <div id="medJokesSection">
+                    <div><label>Medium Sized Jokes:</label></div>
+                    @foreach (var joke in Model.MediumJokes)
+                    {
+                        <p>@Html.Raw(joke.Joke)</p>
+                    }
+                </div>
+            }
+            @if (Model.LargeJokes.Any())
+            {
+                <div id="largeJokesSection">
+                    <div><label>Large Sized Jokes:</label></div>
+                    @foreach (var joke in Model.LargeJokes)
+                    {
+                        <p>@Html.Raw(joke.Joke)</p>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-match"><p>Unable to find any jokes with this word</p></div>
+    }
+</div>

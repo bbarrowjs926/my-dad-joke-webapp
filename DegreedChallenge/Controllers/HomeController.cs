@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using DegreedChallenge.Handlers;
+using DegreedChallenge.Services;
 
 namespace DegreedChallenge.Controllers
 {
@@ -13,18 +15,22 @@ namespace DegreedChallenge.Controllers
             return View();
         }
 
-        public ActionResult About()
+        [HttpGet]
+        public ActionResult GetRandomJoke()
         {
-            ViewBag.Message = "Your application description page.";
+            var handler = new DadJokeHandler(new DadJokeService()); 
+            var vm = handler.GetRandomJoke();
 
-            return View();
+
+            return Json(new {Result = vm.Joke}, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Contact()
+        public ActionResult GetJokesWithTerm(string jokeTerm)
         {
-            ViewBag.Message = "Your contact page.";
+            var handler = new DadJokeHandler(new DadJokeService()); 
+            var vm = handler.GetJokesWithTerm(jokeTerm);
 
-            return View();
+            return PartialView("_FilteredJokesList", vm);
         }
     }
 }

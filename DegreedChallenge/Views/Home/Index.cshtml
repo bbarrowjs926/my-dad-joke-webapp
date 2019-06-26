@@ -1,7 +1,173 @@
 ﻿@{
     ViewBag.Title = "Jokes and Such";
 }
+@section Styles
+{
+    <style type="text/css">
+        .navbar-inverse {
+            background-color: #0096d6;
+        }
+        .radio-container {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
 
-<div class="row">
-    
+        .my-row {
+            height: 100%;
+            position: relative;
+        }
+
+        .joke-mode-container {
+            display: none;
+        }
+        .look-at-me{
+            text-transform: uppercase;
+            color: #0096d6;
+            font-weight: bold;
+            font-size: larger;
+            
+        }
+        .match-found {
+            overflow: auto;
+            height: 100%;
+            border: solid 1px;
+            padding: 10px 5px 10px 5px;
+        }
+
+        .random-joke-result-wrapper {
+            border: solid;
+            border-width: 1px;
+            padding: 10px;
+            height: 60px;
+        }
+
+        #searchJokeSection {
+            position: absolute;
+            top: 60px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+
+        }
+        
+        #randomJokeGoodness {
+            margin: 0px 0px 0px 0px !important;
+            line-height: 40px;
+        }
+
+        .match-found p {
+            padding-left: 10px;
+        }
+
+    </style>
+}
+<div class="my-row">
+    <div class="radio-container">
+        <div>
+            <label>Joke Options:</label>
+        </div>
+        <div>
+            <input type="radio" name="jokeMode" id="jokeModeRandom" value="random" title="Select to have random jokes displayed for your viewing pleasure"/>
+            <label for="jokeModeRandom">Random Joke</label>
+            <input type="radio" name="jokeMode" id="jokeModeSearch" value="search" title="Select to look for any jokes that contain a term" style="margin-left: 10px;"/>
+            <label for="jokeModeRandom">Joke 'Term' Search</label>
+        </div>
+    </div>
+    <div id="randomJokeSection" class="joke-mode-container">
+        <div><label>Random Joke:</label></div>
+        <div class="random-joke-result-wrapper">
+            <p id="randomJokeGoodness"></p>
+        </div>
+    </div>
+    <div id="searchJokeSection" class="joke-mode-container">
+        <div><label>Joke 'Term' Search:</label></div>
+        <div id="searchJokeHeader">
+            @Html.TextBox("jokeTerm", null, new {@maxlength = "50", @style = "width: 200px;", @placeholder = "Find jokes with word"})
+            <button id="findJokes">Search</button>
+        </div>
+        <div id="searchedJokesResults" style="height: 90%; padding-top: 20px;"></div>
+    </div>
 </div>
+
+@section PageScripts
+{
+    <script type="text/javascript">
+        var pulseId;
+
+        function toggleJokeMode(mode) {
+            if (mode === "random") {
+                setupForRandomJokes();
+            } else {
+                setupForJokeSearch();
+            }
+        }
+
+        function setupForRandomJokes() {
+            var tenSecs = 10000;
+            resetJokeSearchSection();
+            $('#randomJokeSection').show();
+            getRandomJoke();
+            pulseId = window.setInterval(getRandomJoke, tenSecs); 
+        }
+
+        function getRandomJoke() {
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '@Url.Action("GetRandomJoke")',
+                success: function(result) {
+                    $('#randomJokeGoodness').text(result.Result);
+                },
+                error: function() {
+                    window.clearInterval(pulseId); // Stop the polling
+                    $('#randomJokeGoodness').text('Get back to work... Jokes are temporarily unavailable');
+                }
+            });
+        }
+
+        function setupForJokeSearch() {
+            window.clearInterval(pulseId);
+            resetRandomJokeSection();
+           
+            // Show the Joke Search Section
+            $('#searchJokeSection').show();
+            $('#jokeTerm').focus();
+        }
+
+        function resetRandomJokeSection() {
+            $('#randomJokeGoodness').text('');
+            $('#randomJokeSection').hide();
+        }
+
+        function resetJokeSearchSection() {
+            $('#jokeTerm').val('');
+            $('#searchedJokesResults').html('');
+            $('#searchJokeSection').hide();
+        }
+
+        function resetAll() {
+            resetRandomJokeSection();
+            resetJokeSearchSection();
+        }
+
+        $(function () {
+            resetAll();
+            $('input[type=radio][name=jokeMode]').change(function() {
+                toggleJokeMode(this.value);
+            });
+
+            $('#findJokes').click(function() {
+                if ($('#jokeTerm').val() !== '') {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("GetJokesWithTerm")',
+                        data: {jokeTerm: $('#jokeTerm').val() },
+                        success: function (viewHtml) {
+                            $("#searchedJokesResults").html(viewHtml);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
