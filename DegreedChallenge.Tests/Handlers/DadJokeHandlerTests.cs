@@ -26,7 +26,7 @@ namespace DegreedChallenge.Tests.Handlers
         #region GetRandomJoke Tests
 
         [TestMethod]
-        public void VerifyGetRandomJokeHydratesModel()
+        public async Task VerifyGetRandomJokeHydratesModel()
         {
             // Arrange
             _jokeService.Setup(s => s.GetRandomJoke()).Returns(Task.FromResult(new DadJoke
@@ -39,7 +39,7 @@ namespace DegreedChallenge.Tests.Handlers
             var handler = new DadJokeHandler(_jokeService.Object);
 
             // Act
-            var vm = handler.GetRandomJoke();
+            var vm = await handler.GetRandomJoke();
 
             // Assert
             Assert.IsTrue(!string.IsNullOrWhiteSpace(vm.Joke));
@@ -50,17 +50,17 @@ namespace DegreedChallenge.Tests.Handlers
 
         [TestMethod]
         [ExpectedException(typeof(ApplicationException))]
-        public void VerifyGetJokesWithTermThrowsApplicationErrorWhenASearchIsPerformedWithNoTerm()
+        public async Task VerifyGetJokesWithTermThrowsApplicationErrorWhenASearchIsPerformedWithNoTerm()
         {
             // Arrange
             var handler = new DadJokeHandler(_jokeService.Object);
 
             // Act
-            var vm = handler.GetJokesWithTerm(string.Empty);
+            var vm = await handler.GetJokesWithTerm(string.Empty);
         }
 
         [TestMethod]
-        public void VerifyGetJokesWithTermHydratesVMWhenNoMatchingJokesWithTermFound()
+        public async Task VerifyGetJokesWithTermHydratesVMWhenNoMatchingJokesWithTermFound()
         {
             // Arrange
             var jokes = new List<DadJoke>();
@@ -69,7 +69,7 @@ namespace DegreedChallenge.Tests.Handlers
             var handler = new DadJokeHandler(_jokeService.Object);
             
             // Act
-            var vm = handler.GetJokesWithTerm(jokeTerm);
+            var vm = await handler.GetJokesWithTerm(jokeTerm);
 
             // Assert
             Assert.AreEqual(jokeTerm, vm.Term);
@@ -78,7 +78,7 @@ namespace DegreedChallenge.Tests.Handlers
 
 
         [TestMethod]
-        public void VerifyGetJokesWithTermHydratesVMAndPutsJokeIntoCorrectJokeSizeGrouping()
+        public async Task VerifyGetJokesWithTermHydratesVMAndPutsJokeIntoCorrectJokeSizeGrouping()
         {
             var foundJokes = new List<DadJoke>
             {
@@ -105,7 +105,7 @@ namespace DegreedChallenge.Tests.Handlers
             var handler = new DadJokeHandler(_jokeService.Object);
 
             // Act
-            var vm = handler.GetJokesWithTerm(jokeTerm);
+            var vm = await handler.GetJokesWithTerm(jokeTerm);
 
             // Assert
             Assert.AreEqual(jokeTerm, vm.Term);

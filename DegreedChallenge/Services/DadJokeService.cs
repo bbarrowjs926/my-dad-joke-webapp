@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 using DegreedChallenge.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DegreedChallenge.Services
 {
@@ -24,7 +20,7 @@ namespace DegreedChallenge.Services
 
         public async Task<DadJoke> GetRandomJoke()
         {
-            using (HttpResponseMessage response = await _httpClient.GetAsync("https://icanhazdadjoke.com/",HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+            using (HttpResponseMessage response = await _httpClient.GetAsync("https://icanhazdadjoke.com/"))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -41,7 +37,7 @@ namespace DegreedChallenge.Services
         public async Task<IEnumerable<DadJoke>> GetJokesWithTerm(string jokeTerm)
         {
             string url = $"https://icanhazdadjoke.com/search?limit=30&term={jokeTerm}";
-            using (HttpResponseMessage response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+            using (HttpResponseMessage response = await _httpClient.GetAsync(url))
             {
                 if (response.IsSuccessStatusCode)
                 {

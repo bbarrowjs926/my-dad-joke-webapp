@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using DegreedChallenge.Handlers;
 using DegreedChallenge.Services;
@@ -16,19 +13,19 @@ namespace DegreedChallenge.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetRandomJoke()
+        public async Task<ActionResult> GetRandomJoke()
         {
             var handler = new DadJokeHandler(new DadJokeService()); 
-            var vm = handler.GetRandomJoke();
+            var vm = await handler.GetRandomJoke();
 
 
             return Json(new {Result = vm.Joke}, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetJokesWithTerm(string jokeTerm)
+        public async Task<ActionResult> GetJokesWithTerm(string jokeTerm)
         {
             var handler = new DadJokeHandler(new DadJokeService()); 
-            var vm = handler.GetJokesWithTerm(jokeTerm);
+            var vm = await handler.GetJokesWithTerm(jokeTerm);
 
             return PartialView("_FilteredJokesList", vm);
         }

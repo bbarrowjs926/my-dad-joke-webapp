@@ -15,17 +15,17 @@ namespace DegreedChallenge.Handlers
             _jokeService = jokeService;
         }
 
-        public DadJokeVM GetRandomJoke()
+        public async Task<DadJokeVM> GetRandomJoke()
         {
             var vm = new DadJokeVM();
 
-            var joke = _jokeService.GetRandomJoke().Result;
+            var joke = await _jokeService.GetRandomJoke();
             vm.Joke = joke.Joke;
 
             return vm;
         }
 
-        public JokeTermSearchVM GetJokesWithTerm(string jokeTerm)
+        public async Task<JokeTermSearchVM> GetJokesWithTerm(string jokeTerm)
         {
             // Make sure a term has been completed
             if (string.IsNullOrWhiteSpace(jokeTerm))
@@ -38,7 +38,7 @@ namespace DegreedChallenge.Handlers
                 Term = jokeTerm
             };
 
-            var jokes = _jokeService.GetJokesWithTerm(jokeTerm).Result;
+            var jokes = await _jokeService.GetJokesWithTerm(jokeTerm);
 
             foreach (var joke in jokes)
             {
